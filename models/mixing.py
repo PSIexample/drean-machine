@@ -17,13 +17,16 @@ class MixingModel(db.Model):
         self.recipe_id = recipe_id
         self.portion = portion
 
+    def json(self):
+        return {'portion': self.portion}
+
     @classmethod
     def find_by_ingredient(cls, ingredient_id):
-        return cls.query.filter_by(ingredient_id=ingredient_id)
+        return cls.query.filter_by(ingredient_id=ingredient_id).all()
 
     @classmethod
     def find_by_recipe(cls, recipe_id):
-        return cls.query.filter_by(recipe_id=recipe_id)
+        return cls.query.filter_by(recipe_id=recipe_id).all()
 
     def save_to_db(self):
         db.session.add(self)

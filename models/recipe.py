@@ -1,6 +1,5 @@
 import sqlite3
 from db import db
-from models.mixing import MixingModel
 from flask import json
 
 class RecipeModel(db.Model):
@@ -8,9 +7,7 @@ class RecipeModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
-
-    #items = db.relationship('MixingModel', lazy='dynamic')
-
+    
     def __init__(self,name):
         self.name = name
 
@@ -20,8 +17,12 @@ class RecipeModel(db.Model):
     @classmethod
     def find_by_name(cls, name):
         recipe_name = cls.query.filter_by(name=name).first()
-        ingredients = MixingModel.find_by_recipe(recipe_name.id)
- 
+        #ingredients = MixingModel.find_by_recipe(recipe_name.id)
+        return recipe_name
+
+    @classmethod
+    def find_by_id(cls, id):
+        recipe_name = cls.query.filter_by(id=id).first()
         return recipe_name
 
     def save_to_db(self):
