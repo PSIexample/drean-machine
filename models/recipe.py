@@ -7,17 +7,17 @@ class RecipeModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
-    
-    def __init__(self,name):
+
+    def __init__(self,value):
+        self.value = value
         self.name = name
 
     def json(self):
         return {'name': self.name}
 
     @classmethod
-    def find_by_name(cls, name):
-        recipe_name = cls.query.filter_by(name=name).first()
-        #ingredients = MixingModel.find_by_recipe(recipe_name.id)
+    def find_by_value(cls, value):
+        recipe_name = cls.query.filter_by(value=value).first()
         return recipe_name
 
     @classmethod

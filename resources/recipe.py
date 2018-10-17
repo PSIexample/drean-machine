@@ -7,6 +7,8 @@ from models.recipe import RecipeModel
 from models.mixing import MixingModel
 from models.ingredient import IngredientModel
 
+from resources.ingredient import IngredientList
+
 class Recipe(Resource):
 # TODO
 # GET
@@ -19,7 +21,7 @@ class Recipe(Resource):
 ### Parser section
     recipe_parser = reqparse.RequestParser()
     mixing_parser = reqparse.RequestParser()
-    recipe_parser.add_argument('full_name',
+    recipe_parser.add_argument('name',
         type=str,
         required=True,
         help="This field cannot be blank"
@@ -33,8 +35,8 @@ class Recipe(Resource):
     )
 
 ### Returns the recipe for a cocktail. Gets parameter from request URL
-    def get(self, name):
-        recipe = RecipeModel.find_by_name(name)
+    def get(self, value):
+        recipe = RecipeModel.find_by_value(value)
        
         def find_ingredients(recipe_id):
             ingredients_dict = []
@@ -51,14 +53,14 @@ class Recipe(Resource):
         return {'message': 'Recipe not found'}, 404
 
     @jwt_required()
-    def post(self, name):
+    def post(self, value):
         recipe_data = Recipe.recipe_parser.parse_args()
         portion_sum = 0
 
-        if RecipeModel.find_by_name(name):
-            return {'message': "Recipe '{}' already exist".format(name)}, 400
+        if RecipeModel.find_by_value(value):
+            return {'message': "Recipe '{}' already exist".format(value)}, 400
 
-        recipe = RecipeModel(name)
+        recipe = RecipeModel(value)
         for mixing in iter(recipe_data['ingredients_list']):
             portion_sum = portion_sum + mixing['portion']
         if portion_sum > 200:
@@ -69,8 +71,6 @@ class Recipe(Resource):
             for mixing in iter(recipe_data['ingredients_list']):
                 mixing_model = MixingModel(mixing['ingredient_id'], recipe_id, mixing['portion'])
                 mixing_model.save_to_db()
-
-
         except:
             return {'message': 'An error occured during saving to DB'}, 500
         
@@ -93,8 +93,8 @@ class Recipe(Resource):
 
     #     return recipe.json()
 
-    def delete (self, name):
-        recipe = RecipeModel.find_by_name(name)
+    def delete (self, value):
+        recipe = RecipeModel.find_by_value(value)
         if recipe:
             mixings_to_delete = MixingModel.find_by_recipe(recipe.id)
             for row in iter(mixings_to_delete):
@@ -103,6 +103,10 @@ class Recipe(Resource):
             return {'message': 'Recipe deleted'}
         return {'message': 'No such recipe'}
 
+class NewRecipe(Resource):
+    def get(self):
+        possible_ingredients = IngredientList.get(self)
+        return possible_ingredients
 
 class RecipeList(Resource):
     def get(self):

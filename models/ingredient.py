@@ -6,23 +6,23 @@ class IngredientModel(db.Model):
     __tablename__ = 'ingredients'
 
     id = db.Column(db.Integer, primary_key=True)
+    value = db.Column(db.String(80))
     name = db.Column(db.String(80))
-    full_name = db.Column(db.String(80))
     amount = db.Column(db.Integer)
     voltage = db.Column(db.Integer)
 
-    def __init__(self, full_name, amount, voltage):
-        self.name = slugify(full_name)
-        self.full_name = full_name
+    def __init__(self, value, name, amount, voltage):
+        self.value = value
+        self.name = name
         self.amount = amount
         self.voltage = voltage
 
     def json(self):
-        return {'id': self.id, 'name': self.name, 'full_name': self.full_name, 'amount': self.amount, 'voltage': self.voltage}
+        return {'id': self.id, 'value': self.value, 'name': self.name, 'amount': self.amount, 'voltage': self.voltage}
 
     @classmethod
-    def find_by_name(cls, name):
-        return cls.query.filter_by(name=name).first()
+    def find_by_value(cls, value):
+        return cls.query.filter_by(value=value).first()
   
     @classmethod
     def find_by_id(cls, id):
@@ -30,6 +30,9 @@ class IngredientModel(db.Model):
 
     def save_to_db(self):
         db.session.add(self)
+        db.session.commit()
+
+    def update_db(self):
         db.session.commit()
 
     def delete_from_db(self):
