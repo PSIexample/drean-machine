@@ -1,6 +1,5 @@
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
-from collections import defaultdict
 
 
 from models.recipe import RecipeModel
@@ -35,6 +34,7 @@ class Recipe(Resource):
     )
 
 ### Returns the recipe for a cocktail. Gets parameter from request URL
+    @jwt_required()
     def get(self, value):
         recipe = RecipeModel.find_by_value(value)
        
@@ -60,7 +60,7 @@ class Recipe(Resource):
         if RecipeModel.find_by_value(value):
             return {'message': "Recipe '{}' already exist".format(value)}, 400
 
-        recipe = RecipeModel(value)
+        recipe = RecipeModel(value, recipe_data['name'])
         for mixing in iter(recipe_data['ingredients_list']):
             portion_sum = portion_sum + mixing['portion']
         if portion_sum > 200:
@@ -76,23 +76,7 @@ class Recipe(Resource):
         
         return recipe.json(), 201
 
-    # def put(self, name):
-                
-    #    data = Recipe.parser.parse_args()
-    #     recipe = RecipeModel.find_by_name(name)
-
-    #     if recipe:
-    #         recipe.ingredients_list = data['ingredients_list']
-    #     else:
-    #         recipe = RecipeModel(name, **data)
-        
-    #     try:
-    #         recipe.save_to_db()
-    #     except:
-    #         return {'message': 'An error occured'}, 500
-
-    #     return recipe.json()
-
+    @jwt_required()
     def delete (self, value):
         recipe = RecipeModel.find_by_value(value)
         if recipe:

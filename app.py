@@ -6,6 +6,8 @@ from security import authenticate, identity
 from resources.user import UserRegister
 from resources.ingredient import Ingredient, IngredientList
 from resources.recipe import Recipe, NewRecipe, RecipeList
+from resources.order import NewOrder, OrderHistory
+from resources.lets_drink import LetsDrink
 
 
 app = Flask(__name__)
@@ -15,7 +17,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = 'false'
 
 ### App data
-app.secret_key = 'psaj'
+app.secret_key = 'bartender'
 api = Api(app)
 
 ### Creating all database tables before the first run of applications
@@ -32,6 +34,9 @@ api.add_resource(NewRecipe, '/recipe/new')
 api.add_resource(IngredientList, '/ingredients')
 api.add_resource(Ingredient, '/ingredient/<string:value>')
 api.add_resource(UserRegister, '/register')
+api.add_resource(NewOrder, '/recipe/<string:value>/new-order')
+api.add_resource(OrderHistory, '/user/<string:username>/realised')
+api.add_resource(LetsDrink, '/lets-drink/<string:rfid>')
 
 ### Starting an application
 if __name__ == '__main__':

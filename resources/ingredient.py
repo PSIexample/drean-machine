@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from flask_jwt import jwt_required
+from flask_jwt import jwt_required, current_identity
 
 from models.ingredient import IngredientModel
 from models.recipe import RecipeModel
@@ -8,9 +8,10 @@ from models.mixing import MixingModel
 class Ingredient(Resource):
 
 # TODO
-# add voltage
 # change amount after each request    
 
+
+### Define values for ingredient parser
     parser = reqparse.RequestParser()
     parser.add_argument('name',
         type=str,
@@ -27,7 +28,11 @@ class Ingredient(Resource):
         required=True,
         help="This field cannot be left blank"
     )
+    parser.add_argument('pump',
+        type=int,
+    )
 
+### getting list of possible drinks with ingredient with name requested in URL
     def get(self,value):
         def find_possible_drinks(ingredient_id):
             possible_drinks_dict = []
@@ -56,7 +61,7 @@ class Ingredient(Resource):
 
     @jwt_required()
     def put(self, value):
-        
+        print(current_identity.username)
         data = Ingredient.parser.parse_args()
         ingredient = IngredientModel.find_by_value(value)
 
@@ -64,6 +69,7 @@ class Ingredient(Resource):
             ingredient.name = data['name']
             ingredient.amount = data['amount']
             ingredient.voltage = data['voltage']
+            ingredient.pump = data['pump']
         else:
             ingredient = IngredientModel(value, **data)
 

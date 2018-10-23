@@ -6,9 +6,10 @@ class RecipeModel(db.Model):
     __tablename__ = 'recipes'
 
     id = db.Column(db.Integer, primary_key=True)
+    value = db.Column(db.String(80))
     name = db.Column(db.String(80))
 
-    def __init__(self,value):
+    def __init__(self, value, name):
         self.value = value
         self.name = name
 
