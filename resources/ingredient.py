@@ -5,6 +5,10 @@ from models.ingredient import IngredientModel
 from models.recipe import RecipeModel
 from models.mixing import MixingModel
 
+class Test(Resource):
+    def get(self):
+        return {"blink": "2"}, 200
+
 class Ingredient(Resource):
 
 # TODO
