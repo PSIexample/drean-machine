@@ -7,7 +7,7 @@ from models.mixing import MixingModel
 
 class Test(Resource):
     def get(self):
-        return {"blink": "2"}, 200
+        return {"blink": "2"}
 
 class Ingredient(Resource):
 
@@ -67,6 +67,11 @@ class Ingredient(Resource):
     def put(self, value):
         print(current_identity.username)
         data = Ingredient.parser.parse_args()
+
+        pump_check = IngredientModel.find_by_pump(data['pump'])
+        if pump_check:
+            return {'message':  'Pump already in use in:', 'ingredient': pump_check.name}
+
         ingredient = IngredientModel.find_by_value(value)
 
         if ingredient:
@@ -91,3 +96,7 @@ class Ingredient(Resource):
 class IngredientList(Resource):
     def get(self):
         return {'ingredients': list(map(lambda x: x.json(), IngredientModel.query.all()))}
+
+class PumpList(Resource):
+    def get(self):
+        return {'recipes': list(map(lambda x: x.json(), IngredientModel.get_all_pumps()))}

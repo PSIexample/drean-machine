@@ -14,7 +14,7 @@ class UserModel(db.Model):
         self.username = username
         self.password = password
         self.current_order = current_order
-        self.rfid = "1234"
+        self.rfid = ""
 
     @classmethod
     def find_by_username(cls, username):
@@ -28,6 +28,12 @@ class UserModel(db.Model):
     def find_by_rfid(cls, rfid):
         return cls.query.filter_by(rfid=rfid).first()
 
+    @classmethod
+    def update_card(cls, username, rfid):
+        user = cls.find_by_username(username)
+        user.rfid = rfid
+        user.save_to_db()
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
@@ -35,3 +41,7 @@ class UserModel(db.Model):
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
+
+#Initializing awaiting for card variable
+class UserCardRegistrationModel(object):
+    awaiting_for_card = ""

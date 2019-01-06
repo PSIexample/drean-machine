@@ -29,6 +29,14 @@ class IngredientModel(db.Model):
     def find_by_id(cls, id):
         return cls.query.filter_by(id=id).first()
 
+    @classmethod
+    def find_by_pump(cls, pump):
+        return cls.query.filter_by(pump=pump).first()
+
+    @classmethod
+    def get_all_pumps(cls):
+        return cls.query.filter(cls.pump != None).all()
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()

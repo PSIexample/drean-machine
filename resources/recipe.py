@@ -19,7 +19,7 @@ class Recipe(Resource):
 
 ### Parser section
     recipe_parser = reqparse.RequestParser()
-    mixing_parser = reqparse.RequestParser()
+    #mixing_parser = reqparse.RequestParser()
     recipe_parser.add_argument('name',
         type=str,
         required=True,
@@ -34,20 +34,11 @@ class Recipe(Resource):
     )
 
 ### Returns the recipe for a cocktail. Gets parameter from request URL
-    @jwt_required()
     def get(self, value):
         recipe = RecipeModel.find_by_value(value)
-       
-        def find_ingredients(recipe_id):
-            ingredients_dict = []
-            ingredients_query = MixingModel.find_by_recipe(recipe_id)
-            for row in iter(ingredients_query):
-                ingredient = IngredientModel.find_by_id(row.ingredient_id)
-                ingredients_dict.append([dict(ingredient.json(), **(row.json()))])
-            return ingredients_dict
         
         if recipe:
-            ingredients = find_ingredients(recipe.id)
+            ingredients = RecipeModel.find_ingredients(recipe.id)
             return {"recipe": recipe.json(), "ingredients": ingredients}
 
         return {'message': 'Recipe not found'}, 404

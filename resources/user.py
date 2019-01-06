@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
 
-from models.user import UserModel
+from models.user import UserModel, UserCardRegistrationModel
 
 class UserRegister(Resource):
 
@@ -41,3 +41,14 @@ class UserRegister(Resource):
             user.delete_from_db()
             return {"message": "User deleted"}, 201
         return {"message": "No such item"}
+
+class UserCardRegistration(Resource):
+
+    @jwt_required
+    def get(self, username):
+        user = UserModel.find_by_username(username)
+        if user:
+            UserCardRegistrationModel.awaiting_for_card = username
+            return {'message': UserCardRegistrationModel.awaiting_for_card}
+
+        return {'message': 'No such user'}
